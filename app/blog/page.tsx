@@ -1,21 +1,28 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
 import { usePostService } from '@/app/hooks/usePostService';
 import { NewsletterForm } from '@/app/components/newsletter/NewsletterForm';
-import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/components/ui/card';
 import { Badge } from '@/app/components/ui/badge';
 import { Skeleton } from '@/app/components/ui/skeleton';
-import { Clock, User, Calendar } from 'lucide-react';
+import { Clock, User, Calendar, Search, Filter, ArrowRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { motion } from 'framer-motion';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { StaggeredList } from '@/components/ui/staggered-list';
+import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
 
 export default function BlogPage(): React.ReactElement {
   const { useGetPublishedPosts } = usePostService();
   const { data: posts, isPending, isError, error } = useGetPublishedPosts();
   const [query, setQuery] = useState('');
   const [tag, setTag] = useState('');
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
 
   // Memoize the unique tags list
   const tags = useMemo(() => {
@@ -48,6 +55,31 @@ export default function BlogPage(): React.ReactElement {
     });
   };
 
+  // Container animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2
+      }
+    }
+  };
+
+  // Item animation variants
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5,
+        ease: [0.22, 1, 0.36, 1]
+      }
+    }
+  };
+
   if (isPending) {
     return (
       <div className="max-w-6xl mx-auto p-4 space-y-6">
@@ -56,10 +88,10 @@ export default function BlogPage(): React.ReactElement {
           <Skeleton className="h-10 w-full" />
           <Skeleton className="h-10 w-32" />
         </div>
-        <Skeleton className="h-64 w-full" />
-        <div className="space-y-4">
+        <Skeleton className="h-64 w-full rounded-xl" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3].map((i) => (
-            <Skeleton key={i} className="h-24 w-full" />
+            <Skeleton key={i} className="h-64 w-full rounded-xl" />
           ))}
         </div>
       </div>
@@ -78,155 +110,191 @@ export default function BlogPage(): React.ReactElement {
 
   return (
     <main className="max-w-6xl mx-auto p-4 space-y-8">
-      <div className="text-center space-y-4">
-        <h1 className="text-4xl font-bold">Blog</h1>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Insights, tutorials, and updates from our team
-        </p>
-      </div>
+      <RevealOnScroll>
+        <div className="text-center space-y-4">
+          <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-secondary-600 dark:from-primary-400 dark:to-secondary-400">Blog</h1>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Insights, tutorials, and updates from our team
+          </p>
+        </div>
+      </RevealOnScroll>
 
-      <div className="flex flex-col sm:flex-row gap-4 items-center">
-        <Input 
-          placeholder="Search posts..." 
-          value={query} 
-          onChange={handleQueryChange} 
-          aria-label="Search posts"
-          className="flex-1"
-        />
-        <select 
-          value={tag} 
-          onChange={(e) => setTag(e.target.value)} 
-          className="border rounded px-3 py-2 bg-background"
-          aria-label="Filter by tag"
-        >
-          <option value="">All Tags</option>
-          {tags.map((t) => (
-            <option key={t} value={t}>{t}</option>
-          ))}
-        </select>
-      </div>
+      <motion.div 
+        className="flex flex-col sm:flex-row gap-4 items-center"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+      >
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input 
+            placeholder="Search posts..." 
+            value={query} 
+            onChange={handleQueryChange} 
+            aria-label="Search posts"
+            className={`pl-9 transition-all duration-300 ${isSearchFocused ? 'border-primary ring-2 ring-primary/20' : ''}`}
+            onFocus={() => setIsSearchFocused(true)}
+            onBlur={() => setIsSearchFocused(false)}
+          />
+        </div>
+        <Select value={tag} onValueChange={setTag}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="All Tags" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="">All Tags</SelectItem>
+            {tags.map((t) => (
+              <SelectItem key={t} value={t}>{t}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </motion.div>
       
       {featured && (
-        <Card className="overflow-hidden">
-          {featured.featuredImage && (
-            <div className="relative h-64 w-full">
-              <Image
-                src={featured.featuredImage}
-                alt={featured.title}
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 100vw, 800px"
-              />
-            </div>
-          )}
-          <CardHeader>
-            <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
-              {featured.authorName && (
-                <div className="flex items-center gap-1">
-                  <User className="h-4 w-4" />
-                  <span>{featured.authorName}</span>
+        <RevealOnScroll delay={0.4}>
+          <Card className="overflow-hidden border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-md">
+            <div className="relative">
+              {featured.featuredImage && (
+                <div className="relative h-64 w-full">
+                  <Image
+                    src={featured.featuredImage}
+                    alt={featured.title}
+                    fill
+                    className="object-cover transition-transform duration-500 hover:scale-105"
+                    sizes="(max-width: 768px) 100vw, 800px"
+                    priority
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                 </div>
               )}
-              <div className="flex items-center gap-1">
-                <Calendar className="h-4 w-4" />
-                <span>{formatDate(featured.publishedAt || featured.createdAt)}</span>
+              <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                <div className="flex items-center gap-4 text-sm mb-2">
+                  {featured.authorName && (
+                    <div className="flex items-center gap-1">
+                      <User className="h-4 w-4" />
+                      <span>{featured.authorName}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-1">
+                    <Calendar className="h-4 w-4" />
+                    <span>{formatDate(featured.publishedAt || featured.createdAt)}</span>
+                  </div>
+                  {featured.readingTime && (
+                    <div className="flex items-center gap-1">
+                      <Clock className="h-4 w-4" />
+                      <span>{featured.readingTime} min read</span>
+                    </div>
+                  )}
+                </div>
+                <h2 className="text-2xl font-bold mb-2 line-clamp-2">{featured.title}</h2>
+                <div className="flex gap-2 mb-4">
+                  {featured.tags.map((tag) => (
+                    <Badge key={tag} variant="secondary" className="bg-white/20 text-white hover:bg-white/30">
+                      {tag}
+                    </Badge>
+                  ))}
+                  {featured.isPremium && (
+                    <Badge variant="default" className="bg-primary/80">Premium</Badge>
+                  )}
+                </div>
+                <Button 
+                  asChild 
+                  variant="default" 
+                  className="gap-2"
+                >
+                  <Link href={`/blog/${featured.slug}`}>
+                    Read Article
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </Button>
               </div>
-              {featured.readingTime && (
-                <div className="flex items-center gap-1">
-                  <Clock className="h-4 w-4" />
-                  <span>{featured.readingTime} min read</span>
-                </div>
-              )}
             </div>
-            <CardTitle className="text-2xl">
-              <Link href={`/blog/${featured.slug}`} className="hover:text-primary transition-colors">
-                {featured.title}
-              </Link>
-            </CardTitle>
-            {featured.excerpt && (
-              <p className="text-muted-foreground">{featured.excerpt}</p>
-            )}
-            <div className="flex gap-2">
-              {featured.tags.map((tag) => (
-                <Badge key={tag} variant="secondary">
-                  {tag}
-                </Badge>
-              ))}
-              {featured.isPremium && (
-                <Badge variant="default">Premium</Badge>
-              )}
-            </div>
-          </CardHeader>
-        </Card>
+          </Card>
+        </RevealOnScroll>
       )}
       
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {filtered.slice(1).map((post) => (
-          <Card key={post.id} className="h-full flex flex-col">
-            {post.featuredImage && (
-              <div className="relative h-48 w-full">
-                <Image
-                  src={post.featuredImage}
-                  alt={post.title}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                />
-              </div>
-            )}
-            <CardHeader className="flex-1">
-              <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
-                {post.authorName && (
-                  <div className="flex items-center gap-1">
-                    <User className="h-3 w-3" />
-                    <span>{post.authorName}</span>
-                  </div>
-                )}
-                <div className="flex items-center gap-1">
-                  <Calendar className="h-3 w-3" />
-                  <span>{formatDate(post.publishedAt || post.createdAt)}</span>
-                </div>
-                {post.readingTime && (
-                  <div className="flex items-center gap-1">
-                    <Clock className="h-3 w-3" />
-                    <span>{post.readingTime} min</span>
-                  </div>
-                )}
-              </div>
-              <CardTitle className="text-lg">
-                <Link href={`/blog/${post.slug}`} className="hover:text-primary transition-colors line-clamp-2">
-                  {post.title}
-                </Link>
-              </CardTitle>
-              {post.excerpt && (
-                <p className="text-muted-foreground text-sm line-clamp-3">{post.excerpt}</p>
-              )}
-            </CardHeader>
-            <CardContent className="pt-0">
-              <div className="flex gap-2 flex-wrap">
-                {post.tags.slice(0, 3).map((tag) => (
-                  <Badge key={tag} variant="outline" className="text-xs">
-                    {tag}
-                  </Badge>
-                ))}
-                {post.tags.length > 3 && (
-                  <Badge variant="outline" className="text-xs">
-                    +{post.tags.length - 3} more
-                  </Badge>
-                )}
-                {post.isPremium && (
-                  <Badge variant="default" className="text-xs">Premium</Badge>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+      <div className="space-y-6">
+        <RevealOnScroll delay={0.5}>
+          <h2 className="text-2xl font-bold">Latest Articles</h2>
+        </RevealOnScroll>
+        
+        <ScrollArea className="h-full max-h-[800px] pr-4">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <StaggeredList>
+              {filtered.slice(1).map((post) => (
+                <Card 
+                  key={post.id} 
+                  className="h-full flex flex-col hover:shadow-md transition-all duration-300 border-border/50 hover:border-primary/30 overflow-hidden group"
+                >
+                  {post.featuredImage && (
+                    <div className="relative h-48 w-full overflow-hidden">
+                      <Image
+                        src={post.featuredImage}
+                        alt={post.title}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      />
+                    </div>
+                  )}
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
+                      {post.authorName && (
+                        <div className="flex items-center gap-1">
+                          <User className="h-3 w-3" />
+                          <span>{post.authorName}</span>
+                        </div>
+                      )}
+                      <div className="flex items-center gap-1">
+                        <Calendar className="h-3 w-3" />
+                        <span>{formatDate(post.publishedAt || post.createdAt)}</span>
+                      </div>
+                      {post.readingTime && (
+                        <div className="flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          <span>{post.readingTime} min</span>
+                        </div>
+                      )}
+                    </div>
+                    <CardTitle className="text-lg group-hover:text-primary transition-colors">
+                      <Link href={`/blog/${post.slug}`} className="line-clamp-2">
+                        {post.title}
+                      </Link>
+                    </CardTitle>
+                    {post.excerpt && (
+                      <CardDescription className="text-sm line-clamp-3">{post.excerpt}</CardDescription>
+                    )}
+                  </CardHeader>
+                  <CardContent className="pt-0 mt-auto">
+                    <div className="flex gap-2 flex-wrap">
+                      {post.tags.slice(0, 3).map((tag) => (
+                        <Badge key={tag} variant="outline" className="text-xs">
+                          {tag}
+                        </Badge>
+                      ))}
+                      {post.tags.length > 3 && (
+                        <Badge variant="outline" className="text-xs">
+                          +{post.tags.length - 3} more
+                        </Badge>
+                      )}
+                      {post.isPremium && (
+                        <Badge variant="default" className="text-xs">Premium</Badge>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </StaggeredList>
+          </div>
+        </ScrollArea>
       </div>
       
-      <div className="pt-8 border-t">
-        <h2 className="text-xl font-semibold mb-4">Stay Updated</h2>
-        <NewsletterForm />
-      </div>
+      <RevealOnScroll direction="up">
+        <div className="pt-8 border-t">
+          <h2 className="text-xl font-semibold mb-4">Stay Updated</h2>
+          <NewsletterForm />
+        </div>
+      </RevealOnScroll>
     </main>
   );
 }
