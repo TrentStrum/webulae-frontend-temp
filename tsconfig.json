@@ -23,7 +23,7 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"],
+      "@/*": ["./app/*"],
       "hooks": ["./app/hooks"]
     },
     "allowImportingTsExtensions": true,
