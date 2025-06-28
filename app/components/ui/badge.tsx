@@ -1,5 +1,6 @@
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
+import { motion } from "framer-motion"
 
 import { cn } from "@/lib/utils"
 
@@ -25,11 +26,27 @@ const badgeVariants = cva(
 
 export interface BadgeProps
   extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof badgeVariants> {}
+    VariantProps<typeof badgeVariants> {
+  animated?: boolean;
+}
 
-function Badge({ className, variant, ...props }: BadgeProps) {
+function Badge({ className, variant, animated = false, ...props }: BadgeProps) {
+  const BadgeComponent = animated ? motion.div : "div";
+  
+  const animationProps = animated ? {
+    initial: { scale: 0.8, opacity: 0 },
+    animate: { scale: 1, opacity: 1 },
+    transition: { duration: 0.2 },
+    whileHover: { scale: 1.05 },
+    whileTap: { scale: 0.95 }
+  } : {};
+  
   return (
-    <div className={cn(badgeVariants({ variant }), className)} {...props} />
+    <BadgeComponent
+      className={cn(badgeVariants({ variant }), className)}
+      {...animationProps}
+      {...props}
+    />
   )
 }
 

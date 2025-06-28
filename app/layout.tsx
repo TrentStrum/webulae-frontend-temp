@@ -6,6 +6,7 @@ import dynamic from 'next/dynamic';
 import ErrorBoundary from './ErrorBoundary';
 import { ClerkProvider } from '@clerk/nextjs';
 import { Toaster } from '@/components/ui/sonner';
+import { PageTransition } from "@/components/ui/page-transition";
 
 const MSWProvider = dynamic(() => import('./components/MSWProvider').then(mod => ({ default: mod.MSWProvider })), {
   ssr: false
@@ -29,7 +30,9 @@ export default function RootLayout({
           <ErrorBoundary>
             <MSWProvider>
               <AppProviders>
-                {children}
+                <PageTransition mode="fade">
+                  {children}
+                </PageTransition>
                 <Toaster position="bottom-right" />
               </AppProviders>
             </MSWProvider>

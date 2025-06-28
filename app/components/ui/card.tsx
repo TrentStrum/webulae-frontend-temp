@@ -1,31 +1,37 @@
 import * as React from "react"
+import { motion } from "framer-motion"
 
 import { cn } from "@/lib/utils"
 
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   as?: React.ElementType;
+  animated?: boolean;
 }
 
-function Card({ className, as: Component = "div", ...props }: CardProps) {
+function Card({ className, as: Component = "div", animated = false, ...props }: CardProps) {
+  const CardComponent = animated ? motion.div : Component;
+  
+  const animationProps = animated ? {
+    whileHover: { y: -5, boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)" },
+    transition: { duration: 0.3 }
+  } : {};
+  
   return (
-    <Component
+    <CardComponent
       data-slot="card"
       className={cn(
-        "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm",
+        "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm transition-all duration-300",
         className
       )}
+      {...animationProps}
       {...props}
     />
   )
 }
 
-interface CardHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
-  as?: React.ElementType;
-}
-
-function CardHeader({ className, as: Component = "div", ...props }: CardHeaderProps) {
+function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
-    <Component
+    <div
       data-slot="card-header"
       className={cn(
         "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6",
@@ -36,13 +42,9 @@ function CardHeader({ className, as: Component = "div", ...props }: CardHeaderPr
   )
 }
 
-interface CardTitleProps extends React.HTMLAttributes<HTMLHeadingElement> {
-  as?: React.ElementType;
-}
-
-function CardTitle({ className, as: Component = "h3", ...props }: CardTitleProps) {
+function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
   return (
-    <Component
+    <div
       data-slot="card-title"
       className={cn("leading-none font-semibold", className)}
       {...props}
@@ -50,13 +52,9 @@ function CardTitle({ className, as: Component = "h3", ...props }: CardTitleProps
   )
 }
 
-interface CardDescriptionProps extends React.HTMLAttributes<HTMLParagraphElement> {
-  as?: React.ElementType;
-}
-
-function CardDescription({ className, as: Component = "p", ...props }: CardDescriptionProps) {
+function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
   return (
-    <Component
+    <div
       data-slot="card-description"
       className={cn("text-muted-foreground text-sm", className)}
       {...props}
@@ -64,7 +62,7 @@ function CardDescription({ className, as: Component = "p", ...props }: CardDescr
   )
 }
 
-function CardAction({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+function CardAction({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card-action"
@@ -77,13 +75,9 @@ function CardAction({ className, ...props }: React.HTMLAttributes<HTMLDivElement
   )
 }
 
-interface CardContentProps extends React.HTMLAttributes<HTMLDivElement> {
-  as?: React.ElementType;
-}
-
-function CardContent({ className, as: Component = "div", ...props }: CardContentProps) {
+function CardContent({ className, ...props }: React.ComponentProps<"div">) {
   return (
-    <Component
+    <div
       data-slot="card-content"
       className={cn("px-6", className)}
       {...props}
@@ -91,13 +85,9 @@ function CardContent({ className, as: Component = "div", ...props }: CardContent
   )
 }
 
-interface CardFooterProps extends React.HTMLAttributes<HTMLDivElement> {
-  as?: React.ElementType;
-}
-
-function CardFooter({ className, as: Component = "div", ...props }: CardFooterProps) {
+function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
   return (
-    <Component
+    <div
       data-slot="card-footer"
       className={cn("flex items-center px-6 [.border-t]:pt-6", className)}
       {...props}

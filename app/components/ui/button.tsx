@@ -1,6 +1,7 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
+import { motion } from "framer-motion"
 
 import { cn } from "@/lib/utils"
 
@@ -40,19 +41,23 @@ interface ButtonProps
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
   loading?: boolean;
+  asLink?: boolean;
+  href?: string;
+  animated?: boolean;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, loading = false, disabled, children, ...props }, ref) => {
-    const Comp = asChild ? Slot : "button"
-
-    return (
+  ({ className, variant, size, asChild = false, loading = false, disabled, children, asLink = false, href, animated = true, ...props }, ref) => {
+    const Comp = asChild ? Slot : asLink ? "a" : "button"
+    
+    const buttonContent = (
       <Comp
         ref={ref}
         data-slot="button"
         className={cn(buttonVariants({ variant, size, className }))}
         disabled={loading || disabled}
         aria-busy={loading}
+        href={asLink ? href : undefined}
         {...props}
       >
         {loading ? (
@@ -70,9 +75,23 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         )}
       </Comp>
     )
+    
+    if (!animated) {
+      return buttonContent;
+    }
+    
+    return (
+      <motion.div
+        className="inline-block"
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+        transition={{ duration: 0.2 }}
+      >
+        {buttonContent}
+      </motion.div>
+    )
   }
 )
-
 Button.displayName = "Button"
 
-export { Button, buttonVariants, type ButtonProps }
+export { Button, buttonVariants }

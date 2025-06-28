@@ -111,6 +111,24 @@ module.exports = {
 				'space-float': 'space-float 6s ease-in-out infinite',
 				'nebula-pulse': 'nebula-pulse 3s ease-in-out infinite',
 				'star-twinkle': 'star-twinkle 4s ease-in-out infinite',
+				'fade-in': 'fadeIn 0.3s ease-in-out forwards',
+				'fade-out': 'fadeOut 0.3s ease-in-out forwards',
+				'slide-in-right': 'slideInRight 0.3s ease-out forwards',
+				'slide-in-left': 'slideInLeft 0.3s ease-out forwards',
+				'slide-in-up': 'slideInUp 0.3s ease-out forwards',
+				'slide-in-down': 'slideInDown 0.3s ease-out forwards',
+				'scale-in': 'scaleIn 0.2s ease-out forwards',
+				'scale-out': 'scaleOut 0.2s ease-in forwards',
+				'bounce-slow': 'bounce 3s ease-in-out infinite',
+				'pulse-slow': 'pulse 3s ease-in-out infinite',
+				'shimmer': 'shimmer 2s infinite',
+				'progress-fill': 'progressFill 1s ease-out forwards',
+				'checkmark': 'checkmark 0.6s ease-in-out forwards',
+				'notification-in': 'notificationSlideIn 0.3s ease-out forwards',
+				'modal-fade-in': 'modalFadeIn 0.3s ease-out forwards',
+				'modal-backdrop-fade-in': 'modalBackdropFadeIn 0.3s ease-out forwards',
+				'shake': 'shake 0.5s ease-in-out',
+				'gradient-flow': 'gradientFlow 5s ease infinite',
 			},
 			keyframes: {
 				'space-float': {
@@ -131,7 +149,13 @@ module.exports = {
 				'nebula-gradient': 'linear-gradient(135deg, var(--secondary-900), var(--secondary-700), var(--primary-800), var(--accent-700), var(--secondary-800))',
 				'cosmic-gradient': 'linear-gradient(to right, var(--accent-700), var(--primary-600))',
 			},
+			transitionTimingFunction: {
+				'bounce': 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+				'warp': 'cubic-bezier(0.19, 1, 0.22, 1)',
+			},
 		},
 	},
-	plugins: [],
+	plugins: [
+		require('tailwindcss-animate')
+	],
 };

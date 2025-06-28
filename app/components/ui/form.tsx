@@ -1,3 +1,5 @@
+"use client"
+
 import * as React from "react"
 import * as LabelPrimitive from "@radix-ui/react-label"
 import { Slot } from "@radix-ui/react-slot"
@@ -9,6 +11,7 @@ import {
   FormProvider,
   useFormContext,
 } from "react-hook-form"
+import { motion } from "framer-motion"
 
 import { cn } from "@/lib/utils"
 import { Label } from "@/components/ui/label"
@@ -94,7 +97,7 @@ const FormLabel = React.forwardRef<
     <Label
       ref={ref}
       className={cn(
-        "mb-2 block text-sm font-medium",
+        "mb-2 block text-sm font-medium transition-colors duration-200",
         error && "text-destructive",
         className
       )}
@@ -156,14 +159,18 @@ const FormMessage = React.forwardRef<
   }
 
   return (
-    <p
+    <motion.p
       ref={ref}
       id={formMessageId}
       className={cn("text-sm font-medium text-destructive", className)}
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.2 }}
       {...props}
     >
       {body}
-    </p>
+    </motion.p>
   )
 })
 FormMessage.displayName = "FormMessage"
