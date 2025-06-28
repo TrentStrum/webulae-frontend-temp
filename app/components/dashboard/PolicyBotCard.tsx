@@ -2,10 +2,10 @@
 
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/components/ui/card';
-import { Button } from '@/app/components/ui/button';
-import { Badge } from '@/app/components/ui/badge';
-import { Shield, Crown, ArrowRight, Lock } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Shield, Crown, ArrowRight, Lock, CheckCircle } from 'lucide-react';
 
 export default function PolicyBotCard() {
   const { user, isLoaded } = useUser();
@@ -13,11 +13,16 @@ export default function PolicyBotCard() {
 
   if (!isLoaded) {
     return (
-      <div className="animate-pulse">
-        <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
-        <div className="h-3 bg-muted rounded w-1/2 mb-4"></div>
-        <div className="h-8 bg-muted rounded w-full"></div>
-      </div>
+      <Card className="border-border/50">
+        <CardContent className="p-6">
+          <div className="animate-pulse space-y-3">
+            <div className="h-5 bg-muted rounded w-1/2"></div>
+            <div className="h-4 bg-muted rounded w-3/4"></div>
+            <div className="h-4 bg-muted rounded w-full"></div>
+            <div className="h-10 bg-muted rounded w-full mt-4"></div>
+          </div>
+        </CardContent>
+      </Card>
     );
   }
 
@@ -38,26 +43,31 @@ export default function PolicyBotCard() {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Shield className="h-5 w-5 text-primary" />
-          <h3 className="font-semibold">Policy Bot</h3>
+    <Card className={cn(
+      "border-border/50 overflow-hidden transition-all duration-300",
+      hasAccess ? "hover:border-primary/50 hover:shadow-md" : "hover:border-secondary/50 hover:shadow-md"
+    )}>
+      <CardHeader className="pb-2">
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <Shield className="h-5 w-5 text-primary" />
+            Policy Bot
+          </CardTitle>
+          {hasAccess ? (
+            <Badge variant="default" className="text-xs">
+              <Crown className="h-3 w-3 mr-1" />
+              Pro+
+            </Badge>
+          ) : (
+            <Badge variant="secondary" className="text-xs">
+              <Lock className="h-3 w-3 mr-1" />
+              Upgrade
+            </Badge>
+          )}
         </div>
-        {hasAccess ? (
-          <Badge variant="default" className="text-xs">
-            <Crown className="h-3 w-3 mr-1" />
-            Pro+
-          </Badge>
-        ) : (
-          <Badge variant="secondary" className="text-xs">
-            <Lock className="h-3 w-3 mr-1" />
-            Upgrade
-          </Badge>
-        )}
-      </div>
+      </CardHeader>
 
-      <div className="space-y-3">
+      <CardContent className="pt-2 space-y-4">
         <p className="text-sm text-muted-foreground">
           {hasAccess 
             ? "Generate professional business policies with AI assistance"
@@ -68,15 +78,15 @@ export default function PolicyBotCard() {
         {hasAccess && (
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <CheckCircle className="h-3 w-3 text-green-500" />
               <span>Available templates: PTO, Equipment, Onboarding</span>
             </div>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+              <CheckCircle className="h-3 w-3 text-green-500" />
               <span>AI-powered generation with legal language</span>
             </div>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+              <CheckCircle className="h-3 w-3 text-green-500" />
               <span>Professional formatting and review workflow</span>
             </div>
           </div>
@@ -84,22 +94,27 @@ export default function PolicyBotCard() {
 
         <Button 
           onClick={handleClick}
-          className="w-full"
+          className="w-full gap-2"
           variant={hasAccess ? "default" : "outline"}
         >
           {hasAccess ? (
             <>
               Access Policy Bot
-              <ArrowRight className="h-4 w-4 ml-2" />
+              <ArrowRight className="h-4 w-4" />
             </>
           ) : (
             <>
               Upgrade to Pro+
-              <Crown className="h-4 w-4 ml-2" />
+              <Crown className="h-4 w-4" />
             </>
           )}
         </Button>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
-} 
+}
+
+// Helper function for conditional class names
+function cn(...classes: (string | boolean | undefined)[]) {
+  return classes.filter(Boolean).join(' ');
+}

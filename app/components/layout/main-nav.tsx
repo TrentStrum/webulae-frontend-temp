@@ -3,11 +3,31 @@
 import Link from 'next/link';
 import { useUser, useClerk } from '@clerk/nextjs';
 import { useState, memo, useCallback } from 'react';
-import { Button } from '@/app/components/ui/button';
-import { Menu, User, LogOut, Building2, Home, MessageSquare, FileText, Settings } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { 
+  Menu, 
+  User, 
+  LogOut, 
+  Building2, 
+  Home, 
+  MessageSquare, 
+  FileText, 
+  Settings,
+  LayoutDashboard
+} from 'lucide-react';
 import { useMemo } from 'react';
-import { ThemeToggle } from '@/app/components/ui/theme-toggle';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 import Image from 'next/image';
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 
 // Function to get the appropriate dashboard link based on user role
 const getDashboardLink = (user: any) => {
@@ -37,7 +57,7 @@ const NavLink = memo(({ href, label, icon: Icon, onClick }: {
 }) => (
 	<Link 
 		href={href} 
-		className="font-medium hover:underline flex items-center gap-2 p-2 hover:bg-muted rounded-md"
+		className="flex items-center gap-2 p-2 hover:bg-muted rounded-md transition-colors text-foreground"
 		onClick={onClick}
 		aria-label={label}
 	>
@@ -51,107 +71,123 @@ NavLink.displayName = 'NavLink';
 // Memoized mobile menu component
 const MobileMenu = memo(({ open, setOpen, user }: { open: boolean; setOpen: (open: boolean) => void; user: any }) => (
 	<>
-		<Button variant="ghost" size="icon" aria-label="Open menu" onClick={() => setOpen(!open)}>
-			<Menu className="w-6 h-6" />
-		</Button>
-		{open && (
-			<div className="fixed inset-0 z-50 bg-black bg-opacity-50">
-				<div className="fixed left-0 top-0 h-full w-64 bg-white p-4">
-					<div className="flex flex-col space-y-4 mt-8">
-						<NavLink
-							href={getDashboardLink(user)}
-							label="Dashboard"
-							icon={Home}
-							onClick={() => setOpen(false)}
-						/>
-						<NavLink
-							href="/chat"
-							label="Chat"
-							icon={MessageSquare}
-							onClick={() => setOpen(false)}
-						/>
-						<NavLink
-							href="/documents"
-							label="Documents"
-							icon={FileText}
-							onClick={() => setOpen(false)}
-						/>
-					</div>
+		<Sheet open={open} onOpenChange={setOpen}>
+			<SheetTrigger asChild>
+				<Button variant="ghost" size="icon" aria-label="Open menu" className="md:hidden">
+					<Menu className="w-6 h-6" />
+				</Button>
+			</SheetTrigger>
+			<SheetContent side="left" className="w-64">
+				<SheetHeader className="mb-4">
+					<SheetTitle>Menu</SheetTitle>
+				</SheetHeader>
+				<div className="flex flex-col space-y-3 mt-8">
+					<NavLink
+						href={getDashboardLink(user)}
+						label="Dashboard"
+						icon={LayoutDashboard}
+						onClick={() => setOpen(false)}
+					/>
+					<NavLink
+						href="/chat"
+						label="Chat"
+						icon={MessageSquare}
+						onClick={() => setOpen(false)}
+					/>
+					<NavLink
+						href="/documents"
+						label="Documents"
+						icon={FileText}
+						onClick={() => setOpen(false)}
+					/>
 				</div>
-			</div>
-		)}
+			</SheetContent>
+		</Sheet>
 	</>
 ));
 
 MobileMenu.displayName = 'MobileMenu';
 
-// Separate component for the actual user menu functionality
-function UserMenuContent() {
+// User menu component
+function UserMenu() {
 	const { user } = useUser();
 	const { signOut } = useClerk();
-	const [isOpen, setIsOpen] = useState(false);
 	
 	const handleSignOut = useCallback(() => signOut(), [signOut]);
 	
-	return (
-		<div className="relative">
-			<Button variant="ghost" className="flex items-center gap-2" onClick={() => setIsOpen(!isOpen)}>
-				<span className="text-sm text-muted-foreground truncate max-w-[120px]">
-					{user?.fullName}
-				</span>
-				{user?.imageUrl ? (
-					<Image 
-						src={user.imageUrl} 
-						alt={user.fullName || "User"} 
-						className="w-8 h-8 rounded-full"
-						width={32}
-						height={32}
-					/>
-				) : (
-					<User className="w-5 h-5" />
-				)}
-			</Button>
-			{isOpen && (
-				<div className="absolute right-0 top-full mt-2 w-48 bg-white border rounded-md shadow-lg z-50">
-					<Link href="/account" className="flex items-center gap-2 p-2 hover:bg-gray-100">
-						<User className="w-4 h-4" />
-						Personal Profile
-					</Link>
-					<Link href="/organization" className="flex items-center gap-2 p-2 hover:bg-gray-100">
-						<Building2 className="w-4 h-4" />
-						Organization Settings
-					</Link>
-					<Link href="/settings" className="flex items-center gap-2 p-2 hover:bg-gray-100">
-						<Settings className="w-4 h-4" />
-						Settings
-					</Link>
-					<hr className="my-1" />
-					<button
-						onClick={handleSignOut}
-						className="flex items-center gap-2 p-2 hover:bg-gray-100 text-red-600 w-full text-left"
-					>
-						<LogOut className="w-4 h-4" />
-						Sign out
-					</button>
-				</div>
-			)}
-		</div>
-	);
-}
-
-// Memoized user menu component
-const UserMenu = memo(() => {
-	const { user } = useUser();
-	
-	// Always render the component, but conditionally show content
 	if (!user) {
-		return <div className="w-8 h-8" />; // Placeholder to maintain layout
+		return (
+			<div className="flex gap-2">
+				<Button asChild variant="outline" size="sm">
+					<Link href="/sign-in">Sign In</Link>
+				</Button>
+				<Button asChild size="sm">
+					<Link href="/sign-up">Sign Up</Link>
+				</Button>
+			</div>
+		);
 	}
 	
-	return <UserMenuContent />;
-});
-
-UserMenu.displayName = 'UserMenu';
+	return (
+		<DropdownMenu>
+			<DropdownMenuTrigger asChild>
+				<Button variant="ghost" className="flex items-center gap-2 p-1">
+					<Avatar className="h-8 w-8">
+						<AvatarImage src={user.imageUrl} alt={user.fullName || "User"} />
+						<AvatarFallback>
+							{user.firstName?.[0]}{user.lastName?.[0]}
+						</AvatarFallback>
+					</Avatar>
+					<span className="text-sm font-medium hidden md:block">
+						{user.fullName || user.username}
+					</span>
+				</Button>
+			</DropdownMenuTrigger>
+			<DropdownMenuContent align="end" className="w-56">
+				<DropdownMenuLabel>
+					<div className="flex flex-col">
+						<span>{user.fullName}</span>
+						<span className="text-xs text-muted-foreground">{user.emailAddresses[0]?.emailAddress}</span>
+					</div>
+				</DropdownMenuLabel>
+				<DropdownMenuSeparator />
+				<DropdownMenuItem asChild>
+					<Link href="/account" className="flex items-center gap-2 cursor-pointer">
+						<User className="h-4 w-4" />
+						Personal Profile
+					</Link>
+				</DropdownMenuItem>
+				<DropdownMenuItem asChild>
+					<Link href="/organization" className="flex items-center gap-2 cursor-pointer">
+						<Building2 className="h-4 w-4" />
+						Organization Settings
+					</Link>
+				</DropdownMenuItem>
+				<DropdownMenuItem asChild>
+					<Link href="/settings" className="flex items-center gap-2 cursor-pointer">
+						<Settings className="h-4 w-4" />
+						Settings
+					</Link>
+				</DropdownMenuItem>
+				<DropdownMenuSeparator />
+				<DropdownMenuItem asChild>
+					<Link href={getDashboardLink(user)} className="flex items-center gap-2 cursor-pointer">
+						<Home className="h-4 w-4" />
+						Dashboard
+					</Link>
+				</DropdownMenuItem>
+				<DropdownMenuSeparator />
+				<DropdownMenuItem 
+					onClick={handleSignOut}
+					className="text-red-600 dark:text-red-400 cursor-pointer"
+				>
+					<LogOut className="h-4 w-4 mr-2" />
+					Sign out
+				</DropdownMenuItem>
+			</DropdownMenuContent>
+		</DropdownMenu>
+	);
+}
 
 export function MainNav(): React.ReactElement {
 	const [open, setOpen] = useState(false);
@@ -160,6 +196,12 @@ export function MainNav(): React.ReactElement {
 	// Memoize desktop navigation links
 	const desktopNavLinks = useMemo(() => (
 		<div className="hidden md:flex gap-6 items-center">
+			<Link href="/" className="flex items-center gap-2 font-semibold text-lg">
+				<div className="bg-primary/10 p-1 rounded">
+					<LayoutDashboard className="h-5 w-5 text-primary" />
+				</div>
+				<span>Webulae</span>
+			</Link>
 			<NavLink
 				href={getDashboardLink(user)}
 				label="Dashboard"
@@ -179,11 +221,17 @@ export function MainNav(): React.ReactElement {
 	), [user]);
 
 	return (
-		<nav className="flex items-center justify-between w-full max-w-screen-xl mx-auto px-4" role="navigation" aria-label="Main">
-			{/* Desktop Navigation Links */}
-			<div className="flex items-center gap-4">
-				{desktopNavLinks}
+		<nav className="flex items-center justify-between w-full" role="navigation" aria-label="Main">
+			{/* Mobile Logo */}
+			<div className="md:hidden flex items-center gap-2 font-semibold text-lg">
+				<div className="bg-primary/10 p-1 rounded">
+					<LayoutDashboard className="h-5 w-5 text-primary" />
+				</div>
+				<span>Webulae</span>
 			</div>
+			
+			{/* Desktop Navigation Links */}
+			{desktopNavLinks}
 
 			{/* Mobile Menu Trigger */}
 			<div className="md:hidden">
@@ -192,7 +240,6 @@ export function MainNav(): React.ReactElement {
 
 			{/* User Info and Theme Toggle */}
 			<div className="flex items-center gap-2">
-				<ThemeToggle />
 				<UserMenu />
 			</div>
 		</nav>

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useColorMode } from '@/app/lib/theme/hooks';
+import { useTheme } from 'next-themes';
 import { Button } from '@/components/ui/button';
 import { Moon, Sun, Monitor } from 'lucide-react';
 import {
@@ -17,7 +17,7 @@ interface ThemeToggleProps {
 }
 
 export function ThemeToggle({ variant = 'outline', size = 'icon' }: ThemeToggleProps) {
-  const { colorMode, setColorMode } = useColorMode();
+  const { theme, setTheme } = useTheme();
 
   return (
     <DropdownMenu>
@@ -29,16 +29,16 @@ export function ThemeToggle({ variant = 'outline', size = 'icon' }: ThemeToggleP
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setColorMode('light')}>
-          <Sun className="mr-2 h-4 w-4" />
+        <DropdownMenuItem onClick={() => setTheme('light')} className="flex items-center gap-2 cursor-pointer">
+          <Sun className="h-4 w-4" />
           <span>Light</span>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setColorMode('dark')}>
-          <Moon className="mr-2 h-4 w-4" />
+        <DropdownMenuItem onClick={() => setTheme('dark')} className="flex items-center gap-2 cursor-pointer">
+          <Moon className="h-4 w-4" />
           <span>Dark</span>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setColorMode('system')}>
-          <Monitor className="mr-2 h-4 w-4" />
+        <DropdownMenuItem onClick={() => setTheme('system')} className="flex items-center gap-2 cursor-pointer">
+          <Monitor className="h-4 w-4" />
           <span>System</span>
         </DropdownMenuItem>
       </DropdownMenuContent>

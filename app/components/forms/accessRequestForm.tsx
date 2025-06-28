@@ -4,25 +4,54 @@ import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { accessRequestSchema, type AccessRequestSchema } from '@/app/schemas/accessRequestSchema';
-import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card';
-import { Input } from '@/app/components/ui/input';
-import { Button } from '@/app/components/ui/button';
-import { Textarea } from '@/app/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/app/components/ui/select';
-import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle } from '@/app/components/ui/alert-dialog';
-import { CheckCircle, Clock, Building2, Users, Briefcase } from 'lucide-react';
+import { 
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from '@/components/ui/select';
+import { 
+  AlertDialog, 
+  AlertDialogContent, 
+  AlertDialogDescription, 
+  AlertDialogHeader, 
+  AlertDialogTitle 
+} from '@/components/ui/alert-dialog';
+import { 
+  Card, 
+  CardContent, 
+  CardDescription, 
+  CardHeader, 
+  CardTitle 
+} from '@/components/ui/card';
+import { 
+  CheckCircle, 
+  Clock, 
+  Building2, 
+  Users, 
+  Briefcase,
+  Mail,
+  User
+} from 'lucide-react';
 
 export function AccessRequestForm(): React.ReactElement {
   const [isSubmitted, setIsSubmitted] = React.useState(false);
   const [serverError, setServerError] = React.useState('');
   
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    reset,
-    setValue,
-  } = useForm<AccessRequestSchema>({
+  const form = useForm<AccessRequestSchema>({
     resolver: zodResolver(accessRequestSchema),
     defaultValues: {
       firstName: '',
@@ -53,7 +82,7 @@ export function AccessRequestForm(): React.ReactElement {
       }
 
       setIsSubmitted(true);
-      reset();
+      form.reset();
     } catch (err: unknown) {
       setServerError((err as Error)?.message ?? 'Failed to submit access request');
     }
@@ -61,32 +90,32 @@ export function AccessRequestForm(): React.ReactElement {
 
   if (isSubmitted) {
     return (
-      <Card className="w-full max-w-2xl">
-        <CardHeader className="text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
-            <CheckCircle className="h-8 w-8 text-green-600" />
+      <Card className="border-green-200 bg-green-50/50 dark:bg-green-900/10 dark:border-green-900/30">
+        <CardHeader className="text-center pb-2">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
+            <CheckCircle className="h-8 w-8 text-green-600 dark:text-green-400" />
           </div>
-          <CardTitle className="text-2xl">Access Request Submitted!</CardTitle>
+          <CardTitle className="text-2xl text-green-800 dark:text-green-400">Access Request Submitted!</CardTitle>
         </CardHeader>
-        <CardContent className="text-center space-y-4">
-          <p className="text-muted-foreground">
-            Thank you for your interest in Webulae. We&apos;ve received your access request and will review it carefully.
+        <CardContent className="text-center space-y-4 pt-2">
+          <p className="text-green-700 dark:text-green-300">
+            Thank you for your interest in Webulae. We've received your access request and will review it carefully.
           </p>
-          <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 space-y-2">
-            <div className="flex items-center gap-2 text-blue-800 dark:text-blue-200">
+          <div className="bg-white/80 dark:bg-gray-900/50 rounded-lg p-4 space-y-2 border border-green-200 dark:border-green-900/30">
+            <div className="flex items-center gap-2 text-green-800 dark:text-green-400">
               <Clock className="h-4 w-4" />
               <span className="font-medium">What happens next?</span>
             </div>
-            <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-1 text-left">
-              <li>• We&apos;ll review your request within 1-2 business days</li>
-              <li>• You&apos;ll receive an email with our decision</li>
-              <li>• If approved, we&apos;ll guide you through the onboarding process</li>
+            <ul className="text-sm text-green-700 dark:text-green-300 space-y-1 text-left">
+              <li>• We'll review your request within 1-2 business days</li>
+              <li>• You'll receive an email with our decision</li>
+              <li>• If approved, we'll guide you through the onboarding process</li>
             </ul>
           </div>
           <Button 
             variant="outline" 
             onClick={() => setIsSubmitted(false)}
-            className="mt-4"
+            className="mt-4 border-green-200 text-green-700 hover:bg-green-100 dark:border-green-800 dark:text-green-400 dark:hover:bg-green-900/20"
           >
             Submit Another Request
           </Button>
@@ -96,155 +125,219 @@ export function AccessRequestForm(): React.ReactElement {
   }
 
   return (
-    <Card className="w-full max-w-2xl">
-      <CardHeader>
-        <CardTitle className="text-2xl text-center">Request Access to Webulae</CardTitle>
-        <p className="text-center text-muted-foreground">
+    <div className="space-y-6">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold">Request Access to Webulae</h1>
+        <p className="text-muted-foreground mt-1">
           Tell us about your organization and how you plan to use Webulae
         </p>
-      </CardHeader>
-      <CardContent>
-        {serverError && (
-          <AlertDialog>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Error</AlertDialogTitle>
-              </AlertDialogHeader>
-              <AlertDialogDescription>{serverError}</AlertDialogDescription>
-            </AlertDialogContent>
-          </AlertDialog>
-        )}
+      </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      {serverError && (
+        <AlertDialog open={!!serverError}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Error</AlertDialogTitle>
+            </AlertDialogHeader>
+            <AlertDialogDescription>{serverError}</AlertDialogDescription>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
+
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           {/* Personal Information */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold flex items-center gap-2">
-              <Users className="h-5 w-5" />
-              Personal Information
-            </h3>
+            <div className="flex items-center gap-2 text-lg font-medium">
+              <User className="h-5 w-5 text-primary" />
+              <h2>Personal Information</h2>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">First Name *</label>
-                <Input {...register('firstName')} placeholder="Enter your first name" />
-                {errors.firstName && (
-                  <p className="text-sm text-red-500 mt-1">{errors.firstName.message}</p>
+              <FormField
+                control={form.control}
+                name="firstName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>First Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter your first name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Last Name *</label>
-                <Input {...register('lastName')} placeholder="Enter your last name" />
-                {errors.lastName && (
-                  <p className="text-sm text-red-500 mt-1">{errors.lastName.message}</p>
-                )}
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Email Address *</label>
-              <Input 
-                type="email" 
-                {...register('email')} 
-                placeholder="your.email@company.com" 
               />
-              {errors.email && (
-                <p className="text-sm text-red-500 mt-1">{errors.email.message}</p>
-              )}
+              <FormField
+                control={form.control}
+                name="lastName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Last Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter your last name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email Address</FormLabel>
+                  <FormControl>
+                    <Input 
+                      type="email" 
+                      placeholder="your.email@company.com" 
+                      {...field} 
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
 
           {/* Company Information */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold flex items-center gap-2">
-              <Building2 className="h-5 w-5" />
-              Company Information
-            </h3>
-            <div>
-              <label className="block text-sm font-medium mb-1">Company Name *</label>
-              <Input {...register('companyName')} placeholder="Enter your company name" />
-              {errors.companyName && (
-                <p className="text-sm text-red-500 mt-1">{errors.companyName.message}</p>
-              )}
+            <div className="flex items-center gap-2 text-lg font-medium">
+              <Building2 className="h-5 w-5 text-primary" />
+              <h2>Company Information</h2>
             </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Job Title *</label>
-              <Input {...register('jobTitle')} placeholder="e.g., CEO, Operations Manager, etc." />
-              {errors.jobTitle && (
-                <p className="text-sm text-red-500 mt-1">{errors.jobTitle.message}</p>
+            <FormField
+              control={form.control}
+              name="companyName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Company Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter your company name" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
               )}
-            </div>
+            />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">Industry *</label>
-                <Input {...register('industry')} placeholder="e.g., Healthcare, Manufacturing, etc." />
-                {errors.industry && (
-                  <p className="text-sm text-red-500 mt-1">{errors.industry.message}</p>
+              <FormField
+                control={form.control}
+                name="jobTitle"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Job Title</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g., CEO, Operations Manager, etc." {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Team Size *</label>
-                <Select onValueChange={(value) => setValue('teamSize', value as '1-5' | '6-25' | '26-100' | '100+')}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select team size" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="1-5">1-5 employees</SelectItem>
-                    <SelectItem value="6-25">6-25 employees</SelectItem>
-                    <SelectItem value="26-100">26-100 employees</SelectItem>
-                    <SelectItem value="100+">100+ employees</SelectItem>
-                  </SelectContent>
-                </Select>
-                {errors.teamSize && (
-                  <p className="text-sm text-red-500 mt-1">{errors.teamSize.message}</p>
+              />
+              <FormField
+                control={form.control}
+                name="industry"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Industry</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g., Healthcare, Manufacturing, etc." {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
-              </div>
+              />
             </div>
+            <FormField
+              control={form.control}
+              name="teamSize"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Team Size</FormLabel>
+                  <Select 
+                    onValueChange={(value) => field.onChange(value as '1-5' | '6-25' | '26-100' | '100+')} 
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select team size" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="1-5">1-5 employees</SelectItem>
+                      <SelectItem value="6-25">6-25 employees</SelectItem>
+                      <SelectItem value="26-100">26-100 employees</SelectItem>
+                      <SelectItem value="100+">100+ employees</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
 
           {/* Use Case */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold flex items-center gap-2">
-              <Briefcase className="h-5 w-5" />
-              How will you use Webulae?
-            </h3>
-            <div>
-              <label className="block text-sm font-medium mb-1">Use Case *</label>
-              <Textarea 
-                {...register('useCase')} 
-                placeholder="Describe how you plan to use Webulae. What problems are you trying to solve? What processes would you like to automate?"
-                rows={4}
-              />
-              {errors.useCase && (
-                <p className="text-sm text-red-500 mt-1">{errors.useCase.message}</p>
-              )}
+            <div className="flex items-center gap-2 text-lg font-medium">
+              <Briefcase className="h-5 w-5 text-primary" />
+              <h2>How will you use Webulae?</h2>
             </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Expected Start Date *</label>
-              <Input 
-                type="date" 
-                {...register('expectedStartDate')} 
-                min={new Date().toISOString().split('T')[0]}
-              />
-              {errors.expectedStartDate && (
-                <p className="text-sm text-red-500 mt-1">{errors.expectedStartDate.message}</p>
+            <FormField
+              control={form.control}
+              name="useCase"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Use Case</FormLabel>
+                  <FormControl>
+                    <Textarea 
+                      placeholder="Describe how you plan to use Webulae. What problems are you trying to solve? What processes would you like to automate?"
+                      rows={4}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
               )}
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Additional Information</label>
-              <Textarea 
-                {...register('additionalInfo')} 
-                placeholder="Any additional context, questions, or specific requirements..."
-                rows={3}
-              />
-              {errors.additionalInfo && (
-                <p className="text-sm text-red-500 mt-1">{errors.additionalInfo.message}</p>
+            />
+            <FormField
+              control={form.control}
+              name="expectedStartDate"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Expected Start Date</FormLabel>
+                  <FormControl>
+                    <Input 
+                      type="date" 
+                      {...field} 
+                      min={new Date().toISOString().split('T')[0]}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
               )}
-            </div>
+            />
+            <FormField
+              control={form.control}
+              name="additionalInfo"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Additional Information (Optional)</FormLabel>
+                  <FormControl>
+                    <Textarea 
+                      placeholder="Any additional context, questions, or specific requirements..."
+                      rows={3}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
 
-          <Button type="submit" className="w-full" size="lg" disabled={isSubmitting}>
-            {isSubmitting ? 'Submitting Request...' : 'Submit Access Request'}
+          <Button type="submit" className="w-full" size="lg" disabled={form.formState.isSubmitting}>
+            {form.formState.isSubmitting ? 'Submitting Request...' : 'Submit Access Request'}
           </Button>
         </form>
-      </CardContent>
-    </Card>
+      </Form>
+    </div>
   );
-} 
+}
