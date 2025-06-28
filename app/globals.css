@@ -1,0 +1,350 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  :root {
+    --radius: 0.625rem;
+    /* brand color scales */
+    --primary-100: hsl(210,100%,98%);
+    --primary-200: hsl(210,100%,89.5%);
+    --primary-300: hsl(210,100%,81%);
+    --primary-400: hsl(210,100%,72.5%);
+    --primary-500: hsl(210,100%,64%);
+    --primary-600: hsl(210,100%,55.5%);
+    --primary-700: hsl(210,100%,47%);
+    --primary-800: hsl(210,100%,38.5%);
+    --primary-900: hsl(210,100%,30%);
+
+    --secondary-100: hsl(280,60%,98%);
+    --secondary-200: hsl(280,60%,89.5%);
+    --secondary-300: hsl(280,60%,81%);
+    --secondary-400: hsl(280,60%,72.5%);
+    --secondary-500: hsl(280,60%,64%);
+    --secondary-600: hsl(280,60%,55.5%);
+    --secondary-700: hsl(280,60%,47%);
+    --secondary-800: hsl(280,60%,38.5%);
+    --secondary-900: hsl(280,60%,30%);
+
+    --accent-100: hsl(160,70%,98%);
+    --accent-200: hsl(160,70%,89.5%);
+    --accent-300: hsl(160,70%,81%);
+    --accent-400: hsl(160,70%,72.5%);
+    --accent-500: hsl(160,70%,64%);
+    --accent-600: hsl(160,70%,55.5%);
+    --accent-700: hsl(160,70%,47%);
+    --accent-800: hsl(160,70%,38.5%);
+    --accent-900: hsl(160,70%,30%);
+
+    --white-100: hsl(0,0%,100%);
+    --white-200: hsl(0,0%,98.75%);
+    --white-300: hsl(0,0%,97.5%);
+    --white-400: hsl(0,0%,96.25%);
+    --white-500: hsl(0,0%,95%);
+    --white-600: hsl(0,0%,93.75%);
+    --white-700: hsl(0,0%,92.5%);
+    --white-800: hsl(0,0%,91.25%);
+    --white-900: hsl(0,0%,90%);
+
+    --grey-100: hsl(0,0%,95%);
+    --grey-200: hsl(0,0%,85.625%);
+    --grey-300: hsl(0,0%,76.25%);
+    --grey-400: hsl(0,0%,66.875%);
+    --grey-500: hsl(0,0%,57.5%);
+    --grey-600: hsl(0,0%,48.125%);
+    --grey-700: hsl(0,0%,38.75%);
+    --grey-800: hsl(0,0%,29.375%);
+    --grey-900: hsl(0,0%,20%);
+
+    --black-100: hsl(0,0%,10%);
+    --black-200: hsl(0,0%,8.75%);
+    --black-300: hsl(0,0%,7.5%);
+    --black-400: hsl(0,0%,6.25%);
+    --black-500: hsl(0,0%,5%);
+    --black-600: hsl(0,0%,3.75%);
+    --black-700: hsl(0,0%,2.5%);
+    --black-800: hsl(0,0%,1.25%);
+    --black-900: hsl(0,0%,0%);
+
+    --background: var(--white-100);
+    --foreground: var(--black-900);
+    --card: var(--white-100);
+    --card-foreground: var(--black-900);
+    --popover: var(--white-100);
+    --popover-foreground: var(--black-900);
+    --primary: var(--primary-600);
+    --primary-foreground: var(--white-100);
+    --secondary: var(--secondary-600);
+    --secondary-foreground: var(--white-100);
+    --muted: var(--grey-200);
+    --muted-foreground: var(--grey-700);
+    --accent: var(--accent-600);
+    --accent-foreground: var(--white-100);
+    --destructive: var(--error-500);
+    --border: var(--grey-300);
+    --input: var(--grey-300);
+    --ring: var(--primary-600);
+    --chart-1: oklch(0.646 0.222 41.116);
+    --chart-2: oklch(0.6 0.118 184.704);
+    --chart-3: oklch(0.398 0.07 227.392);
+    --chart-4: oklch(0.828 0.189 84.429);
+    --chart-5: oklch(0.769 0.188 70.08);
+    --sidebar: hsl(0 0% 98%);
+    --sidebar-foreground: hsl(240 5.3% 26.1%);
+    --sidebar-primary: hsl(240 5.9% 10%);
+    --sidebar-primary-foreground: hsl(0 0% 98%);
+    --sidebar-accent: hsl(240 4.8% 95.9%);
+    --sidebar-accent-foreground: hsl(240 5.9% 10%);
+    --sidebar-border: hsl(220 13% 91%);
+    --sidebar-ring: hsl(217.2 91.2% 59.8%);
+
+    /* Success, warning, error, info colors */
+    --success-100: hsl(160, 100%, 95%);
+    --success-500: hsl(160, 84%, 39%);
+    --success-900: hsl(160, 100%, 15%);
+
+    --warning-100: hsl(45, 100%, 95%);
+    --warning-500: hsl(45, 100%, 50%);
+    --warning-900: hsl(45, 100%, 25%);
+
+    --error-100: hsl(0, 100%, 95%);
+    --error-500: hsl(0, 84%, 60%);
+    --error-900: hsl(0, 100%, 30%);
+
+    --info-100: hsl(210, 100%, 95%);
+    --info-500: hsl(210, 100%, 50%);
+    --info-900: hsl(210, 100%, 30%);
+  }
+
+  .dark {
+    --background: var(--black-900);
+    --foreground: var(--white-100);
+    --card: var(--grey-800);
+    --card-foreground: var(--white-100);
+    --popover: var(--grey-800);
+    --popover-foreground: var(--white-100);
+    --primary: var(--primary-400);
+    --primary-foreground: var(--black-900);
+    --secondary: var(--secondary-400);
+    --secondary-foreground: var(--black-900);
+    --muted: var(--grey-700);
+    --muted-foreground: var(--grey-300);
+    --accent: var(--accent-400);
+    --accent-foreground: var(--black-900);
+    --destructive: var(--error-400);
+    --border: var(--grey-600);
+    --input: var(--grey-600);
+    --ring: var(--primary-400);
+    --chart-1: oklch(0.488 0.243 264.376);
+    --chart-2: oklch(0.696 0.17 162.48);
+    --chart-3: oklch(0.769 0.188 70.08);
+    --chart-4: oklch(0.627 0.265 303.9);
+    --chart-5: oklch(0.645 0.246 16.439);
+    --sidebar: hsl(240 5.9% 10%);
+    --sidebar-foreground: hsl(240 4.8% 95.9%);
+    --sidebar-primary: hsl(224.3 76.3% 48%);
+    --sidebar-primary-foreground: hsl(0 0% 100%);
+    --sidebar-accent: hsl(240 3.7% 15.9%);
+    --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
+    --sidebar-border: hsl(240 3.7% 15.9%);
+    --sidebar-ring: hsl(217.2 91.2% 59.8%);
+
+    /* Success, warning, error, info colors in dark mode */
+    --success-100: hsl(160, 60%, 20%);
+    --success-500: hsl(160, 84%, 39%);
+    --success-900: hsl(160, 100%, 85%);
+
+    --warning-100: hsl(45, 60%, 20%);
+    --warning-500: hsl(45, 100%, 50%);
+    --warning-900: hsl(45, 100%, 85%);
+
+    --error-100: hsl(0, 60%, 20%);
+    --error-500: hsl(0, 84%, 60%);
+    --error-900: hsl(0, 100%, 85%);
+
+    --info-100: hsl(210, 60%, 20%);
+    --info-500: hsl(210, 100%, 50%);
+    --info-900: hsl(210, 100%, 85%);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-[color:var(--border)];
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  /* Space-inspired background for light theme */
+  .light body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+      radial-gradient(circle at 80% 10%, var(--primary-100) 0%, transparent 60%),
+      radial-gradient(circle at 20% 90%, var(--secondary-100) 0%, transparent 40%);
+    z-index: -1;
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  /* Deep space background for dark theme */
+  .dark body {
+    background-color: var(--black-900);
+    background-image: 
+      radial-gradient(circle at 15% 50%, #2D006688 0%, transparent 25%),
+      radial-gradient(circle at 85% 30%, #00193D88 0%, transparent 25%);
+  }
+}
+
+/* Typography styles */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-primary);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: 3rem;
+  margin-bottom: 1.5rem;
+}
+
+h2 {
+  font-size: 2.25rem;
+  margin-bottom: 1.25rem;
+}
+
+h3 {
+  font-size: 1.875rem;
+  margin-bottom: 1rem;
+}
+
+h4 {
+  font-size: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+h5 {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+h6 {
+  font-size: 1.125rem;
+  margin-bottom: 0.5rem;
+}
+
+p, ul, ol {
+  font-family: var(--font-secondary);
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+code, pre {
+  font-family: var(--font-mono);
+}
+
+/* Custom scrollbar for space theme */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary-300);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-400);
+}
+
+/* Focus styles */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Selection styles */
+::selection {
+  background-color: var(--primary-200);
+  color: var(--primary-900);
+}
+
+/* Nebula animation for loading states */
+@keyframes nebula-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(var(--secondary-500-rgb), 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(var(--secondary-500-rgb), 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(var(--secondary-500-rgb), 0);
+  }
+}
+
+.animate-nebula-pulse {
+  animation: nebula-pulse 2s infinite;
+}
+
+/* Space-themed transitions */
+.transition-orbit {
+  transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.transition-warp {
+  transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
+}
